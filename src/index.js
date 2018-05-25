@@ -1,48 +1,15 @@
-import React, {Component} from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
-import JSON from './db.json';
+import {Provider} from 'react-redux';
+import {createStore, applyMiddleware} from 'redux';
 
-// css
-import './style.css'
+import reducers from './reducers';
+import App from './containers/app';
 
-// Components
-import Header from './components/header/header';
-import NewsList from './components/news-list/news-list';
+const createStoreWithMiddleware = applyMiddleware()(createStore)
 
-class App extends Component {
-    news = [];
-    keyWord = "";
-    
-    constructor(){
-        super();
-        this.news = JSON;
-    }
-
-    state = {
-        filteredNews: []
-    }
-
-    getKeyWords = ($event) => {
-        let keyWord = $event.target.value;
-        keyWord = keyWord.toUpperCase();
-        let filteredNews = this.news.filter((item)=>{
-            return (item.title.toUpperCase().indexOf(keyWord) >= 0);
-        });
-        this.setState({
-            filteredNews
-        });
-        this.keyWord = keyWord;
-    }
-
-    render() {
-        let newsList = !!this.keyWord ? this.state.filteredNews : this.news;
-        return (
-            <div>
-                <Header onKeyWordChange={this.getKeyWords} />
-                <NewsList news={newsList} />
-            </div>
-        );
-    }
-}
-
-ReactDOM.render(<App/>, document.querySelector('#root'));
+ReactDOM.render(
+    <Provider store={createStoreWithMiddleware(reducers)}>
+        <App />
+    </Provider>
+, document.getElementById('root'));
